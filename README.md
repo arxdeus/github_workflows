@@ -7,8 +7,7 @@ Each workflow below have ID that refers to relevant branch contains predefined `
 #### Usage:
 
 ```
-git submodule add -b [workflow_id] https://github.com/arxdeus/github_workflows
-git submodule update --remote
+git clone -b [workflow_id] https://github.com/arxdeus/github_workflows .github
 ```
 
 ---
