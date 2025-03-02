@@ -12,6 +12,17 @@ git clone -b [workflow_id] https://github.com/arxdeus/github_workflows .github
 
 ---
 
+### Flutter
+
+Setup action:
+
+Workflow ID: `flutter/setup`
+
+Features:
+- Fetch and cache target `flutter` version
+- Cache pub dependencies
+- Cache `flutter` until version change
+
 ### Dart
 
 Dart language contains 2 workflows:
