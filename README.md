@@ -1,5 +1,7 @@
 # Github Actions Workflows
 
+## Outdated
+
 Each workflow below have ID that refers to relevant branch contains predefined `.github/workflow/*.yaml` configuration
 
 `main` branch doesn't contains any Github Actions configuration, but their description
