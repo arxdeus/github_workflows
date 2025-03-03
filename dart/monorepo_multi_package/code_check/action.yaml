@@ -8,9 +8,6 @@ permissions:
   actions: read
   checks: write
 
-env:
-  FLUTTER_TEST_REPORT: ${{github.workspace}}/flutter-test-report.json
-
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -86,12 +83,12 @@ jobs:
       - name: 🧪 Unit & Widget tests
         timeout-minutes: 2
         run: |
-          ls -d packages/* | xargs flutter test --file-reporter="json:${{ env.FLUTTER_TEST_REPORT }}" --concurrency=6 --no-pub --coverage
+          ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
       - name: Write test report
         uses: dorny/test-reporter@v1
         # PRs from forks have no write permissions.
         if: github.event.pull_request.head.repo.fork == false && (success() || failure())
         with:
           name: Test Report (Flutter ${{ matrix.flutter-version }})
-          path: ${{ env.FLUTTER_TEST_REPORT }}
+          path: ${{ github.workspace }}/flutter-test-report.json
           reporter: flutter-json
