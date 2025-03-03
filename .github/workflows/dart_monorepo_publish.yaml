@@ -7,8 +7,6 @@ on:
 jobs:
   setup:
       runs-on: ubuntu-latest
-      permissions:
-        pull-requests: read
       outputs:
         flutter-version: ${{ steps.flutter-version.outputs.version }}
       steps:

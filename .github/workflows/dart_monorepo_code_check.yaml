@@ -11,8 +11,6 @@ permissions:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
     outputs:
       flutter-file-changed: ${{ steps.filter.outputs.flutter-file-changed }}
       flutter-lower-bound: ${{ steps.flutter-version-constraint.outputs.lower-bound }}
