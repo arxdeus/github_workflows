@@ -62,7 +62,7 @@ jobs:
         working-directory: ./
     steps:
       - name: 🚂 Setup Flutter and dependencies
-        uses: arxdeus/github_workflows@flutter/setup
+        uses: arxdeus/github_workflows/flutter/setup
         with:
           flutter-version: ${{ matrix.flutter-version }}
 
