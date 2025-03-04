@@ -1,49 +1,82 @@
 # Github Actions Workflows
 
-## Outdated
 
-Each workflow below have ID that refers to relevant branch contains predefined `.github/workflow/*.yaml` configuration
+## Reusable workflows
 
-`main` branch doesn't contains any Github Actions configuration, but their description
-
-#### Usage:
-
+Refer to any workflow configuration under `.github/workflows` directory inside your own Github Actions configuration
 ```
-git clone -b [workflow_id] https://github.com/arxdeus/github_workflows .github
+jobs:
+    code_check:
+        uses: arxdeus/github_workflows/.github/workflows/dart_monorepo_code_check.yaml@main
 ```
 
----
+Don't forget give relevant permissions and workflow conditions inside your configuration
 
-### Flutter
+Each required by workflow permissions listed in each workflows section below
 
-Setup action:
+Example of usage:
+https://github.com/arxdeus/modulisto/blob/main/.github/workflows/code_check.yaml
 
-Workflow ID: `flutter/setup`
+## Composite actions
+
+Composite actions located in `actions` directory and acts as a steps of the jobs inside your workflows
+
+You may refer to them from your workflows steps under `jobs.*.steps.*.uses` section
+
+```
+steps:
+    - name: Setup
+      uses: arxdeus/github_workflows/actions/flutter_setup@main
+```
+
+Example of usage: https://github.com/arxdeus/github_workflows/blob/main/.github/workflows/dart_monorepo_code_check.yaml#L60
+
+## Flutter
+
+### Setup action:
+
+type: ___Composite action___
 
 Features:
-- Fetch and cache target `flutter` version
-- Cache pub dependencies
-- Cache `flutter` until version change
+- Fetches and caches target `flutter` version
+- Caches pub dependencies
+- Caches `flutter` until version change
 
-### Dart
+#### Action path: `arxdeus/github_workflows/actions/flutter_setup@main`
 
-Dart language contains 2 workflows:
-#### 1. Single-package workflow
+## Dart
 
-Workflow ID: `dart/single_package`
+###  Code check
+
+type: ___Reusable workflow___
 
 Features:
-- `v[x].[x].[x]` semantic versioning via tags
-- Automatic update of `pubspec.yaml` to tag
-- Automatic publish to `pub.dev`
+- Pre-checks that code or pubspec actually was modified
+- Checks both of the lowest (from `pubspec.yaml`) and highest/actual (from `.fvmrc`) versions
+- Creates human-readable Test reports for both versions
 
-#### 2. Multi-package monorepo workflow
+#### Workflow path: `arxdeus/github_workflows/.github/workflows/dart_monorepo_publish.yaml@main`
 
-Workflow ID: `dart/monorepo_multi_package`
+### Multi-package monorepo publish workflow
+
+type: ___Reusable workflow___
 
 Features:
 - `[package_name]-v[x].[x].[x]` semantic versioning via tags
 - Automatic update of `pubspec.yaml` to version extracted from part of tag
 - Automatic publish [package_name] to `pub.dev`
 
----
+#### Workflow path: `arxdeus/github_workflows/.github/workflows/dart_monorepo_publish.yaml@main`
+
+### Single-package publish workflow
+
+type: ___Reusable workflow___
+
+Features:
+- `v[x].[x].[x]` semantic versioning via tags
+- Automatic update of `pubspec.yaml` to tag
+- Automatic publish to `pub.dev`
+
+#### Workflow path: `TBD`
+
+
