@@ -1,0 +1,65 @@
+name: Publish
+permissions:
+  contents: write
+on:
+  workflow_call:
+
+jobs:
+  setup:
+      runs-on: ubuntu-latest
+      outputs:
+        flutter-version: ${{ steps.flutter-version.outputs.version }}
+      steps:
+        - name: 📦 Get the .github actions
+          uses: actions/checkout@v4
+          with:
+            sparse-checkout: |
+              .github
+        - name: Get Flutter SDK version
+          id: flutter-version
+          run: |
+            sdk_constraint=$(cat pubspec.yaml | yq .environment.flutter)
+            version=$(cat .fvmrc | jq -r .flutter)
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+  publish:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version:
+          - ${{ needs.setup.outputs.flutter-version }}
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: 🚂 Setup Flutter and dependencies
+        uses: arxdeus/github_workflows/actions/flutter_setup@main
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+
+      - name: Setup OIDC token
+        uses: dart-lang/setup-dart@v1
+
+      - name: Parse meta from tag
+        env:
+          BRANCH: ${{ github.ref_name }}
+        id: split
+        run: |
+          echo "package_version=${BRANCH##*-v}" >> $GITHUB_OUTPUT
+          echo "package_name=${BRANCH%%-*}" >> $GITHUB_OUTPUT
+          echo "pretty_package_name=${package_name^}" >> $GITHUB_OUTPUT
+
+      - name: Check if release exists
+        id: check_release
+        run: |
+          RELEASE=$(gh release view ${{ steps.split.outputs.package_name }}-v${{ steps.split.outputs.package_version }} --json tagName -q .tagName || echo "not_found")
+          if [[ "$RELEASE" == "not_found" ]]; then
+            echo "CREATE_RELEASE=true" >> $GITHUB_OUTPUT
+          else
+            echo "CREATE_RELEASE=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dry publish check
+        run: cd packages/${{ steps.split.outputs.package_name }} && flutter pub publish --dry-run
