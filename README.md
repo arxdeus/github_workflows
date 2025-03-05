@@ -10,7 +10,7 @@ jobs:
         uses: arxdeus/github_workflows/.github/workflows/dart_monorepo_code_check.yaml@main
 ```
 
-Don't forget give relevant permissions and workflow conditions inside your configuration
+Don't forget to give relevant permissions and workflow conditions inside your configuration
 
 Each required by workflow permissions listed in each workflows section below
 
