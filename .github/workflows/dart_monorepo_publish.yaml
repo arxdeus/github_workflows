@@ -81,8 +81,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
-          name: Release ${{ steps.split.outputs.package_name }} - v${{ steps.split.outputs.package_version }}
-          body: "Automated release for `${{ steps.split.outputs.package_name }}`: version ${{ steps.split.outputs.package_version }}"
+          name: ${{ steps.split.outputs.package_name }} - v${{ steps.split.outputs.package_version }}
+          body: "Automated release for `${{ steps.split.outputs.package_name }}`: v${{ steps.split.outputs.package_version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
