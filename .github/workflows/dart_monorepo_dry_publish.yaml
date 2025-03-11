@@ -61,5 +61,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Append CHANGELOG
+        uses: arxdeus/github_workflows/actions/monorepo_changelog_from_tag@main
+
       - name: Dry publish check
         run: cd packages/${{ steps.split.outputs.package_name }} && flutter pub publish --dry-run

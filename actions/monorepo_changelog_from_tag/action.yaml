@@ -1,0 +1,19 @@
+name: Generate CHANGELOG
+description: Generates CHANGELOG from latest tag to HEAD
+
+inputs:
+  package-name:
+    description: 'Name of the package'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: 📦 Checkout the repo
+      uses: actions/checkout@v4
+
+    - name: Append commits history to CHANGELOG
+      shell: bash
+      run: |
+        cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*")..HEAD packages/${{ inputs.package-name }} | head -n -0)$(echo $'\r\n')$(cat CHANGELOG.md)" > CHANGELOG.md
+        cat <<< "$(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*" | sed 's/^[^-]*-/## /') $(echo $'\r\n')$(cat CHANGELOG.md)" > CHANGELOG.md
