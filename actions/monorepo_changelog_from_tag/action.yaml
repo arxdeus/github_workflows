@@ -15,5 +15,5 @@ runs:
     - name: Append commits history to CHANGELOG
       shell: bash
       run: |
-        cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*")..HEAD packages/${{ inputs.package-name }} | head -n -0)$(echo $'\r\n')$(cat CHANGELOG.md)" > CHANGELOG.md
-        cat <<< "$(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*" | sed 's/^[^-]*-/## /') $(echo $'\r\n')$(cat CHANGELOG.md)" > CHANGELOG.md
+        cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*")..HEAD packages/${{ inputs.package-name }} | head -n -0)$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+        cat <<< "$(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*" | sed 's/^[^-]*-/## /') $(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
