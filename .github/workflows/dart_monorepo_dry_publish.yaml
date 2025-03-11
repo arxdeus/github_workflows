@@ -37,9 +37,6 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
 
-      - name: Setup OIDC token
-        uses: dart-lang/setup-dart@v1
-
       - name: Parse meta from tag
         env:
           BRANCH: ${{ github.ref_name }}
@@ -65,6 +62,7 @@ jobs:
         uses: arxdeus/github_workflows/actions/monorepo_changelog_from_tag@main
         with:
           package-name: ${{ steps.split.outputs.package_name }}
+          package-version: ${{ steps.split.outputs.package_version }}
 
       - name: Dry publish check
         run: cd packages/${{ steps.split.outputs.package_name }} && flutter pub publish --dry-run
