@@ -63,6 +63,8 @@ jobs:
 
       - name: Append CHANGELOG
         uses: arxdeus/github_workflows/actions/monorepo_changelog_from_tag@main
+        with:
+          package-name: ${{ steps.split.outputs.package_name }}
 
       - name: Dry publish check
         run: cd packages/${{ steps.split.outputs.package_name }} && flutter pub publish --dry-run
