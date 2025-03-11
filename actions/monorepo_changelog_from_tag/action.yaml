@@ -2,8 +2,9 @@ name: Generate CHANGELOG
 description: Generates CHANGELOG from latest tag to HEAD
 
 inputs:
+  package-version:
+    required: true
   package-name:
-    description: 'Name of the package'
     required: true
 
 runs:
@@ -15,6 +16,6 @@ runs:
     - name: Append commits history to CHANGELOG
       shell: bash
       run: |
-        cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*")..HEAD packages/${{ inputs.package-name }} | head -n -0)$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
-        cat <<< "$(git describe --abbrev=0 --tags --match "${{ inputs.package-name }}-*" | sed 's/^[^-]*-/## /') $(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+        cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git tag --list --sort=-version:refname "modulisto-v*" | head -n 2 | tail -n 1)..HEAD packages/${{ inputs.package-name }})$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+        cat <<< "## ${{ inputs.package-version }} $(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
         cat packages/${{ inputs.package-name }}/CHANGELOG.md
