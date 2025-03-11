@@ -60,7 +60,6 @@ jobs:
 
       - name: Append CHANGELOG
         uses: arxdeus/github_workflows/actions/monorepo_changelog_from_tag@main
-        working-directory: packages/${{ steps.split.outputs.package_name }}
         with:
           package-name: ${{ steps.split.outputs.package_name }}
           package-version: ${{ steps.split.outputs.package_version }}
