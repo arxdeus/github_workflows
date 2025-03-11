@@ -2,20 +2,24 @@ name: Generate CHANGELOG
 description: Generates CHANGELOG from latest tag to HEAD
 
 inputs:
-  package-version:
-    required: true
   package-name:
     required: true
 
 runs:
   using: composite
   steps:
-    - name: 📦 Checkout the repo
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Append commits history to CHANGELOG
-      shell: bash
-      run: |
-        cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git tag --list --sort=-version:refname "modulisto-v*" | head -n 2 | tail -n 1)..HEAD packages/${{ inputs.package-name }})$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
-        cat <<< "## ${{ inputs.package-version }} $(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
-        cat packages/${{ inputs.package-name }}/CHANGELOG.md
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v4
+        id: git-cliff
+        working-directory: packages/${{ inputs.package-name }}
+        with:
+          config: ../cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+
+      - name: Print the changelog
+        run: cat "${{ steps.git-cliff.outputs.changelog }}"
