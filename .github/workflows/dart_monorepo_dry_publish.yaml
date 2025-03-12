@@ -56,7 +56,7 @@ jobs:
 
       - name: Append CHANGELOG
         shell: bash
-        run |
+        run: |
           cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git tag --list --sort=-version:refname "modulisto-v*" | head -n 2 | tail -n 1)..HEAD packages/${{ steps.split.outputs.package_name }})$(echo $'\r\n')$(cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md)" > packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
           cat <<< "## ${{ steps.split.outputs.package_version }} $(echo $'\r\n')$(cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md)" > packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
           cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
