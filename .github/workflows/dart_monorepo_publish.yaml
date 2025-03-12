@@ -84,6 +84,7 @@ jobs:
           git commit -am "release(${{ inputs.package-name }}): v${{ inputs.package-version }}"
           git tag ${{ inputs.package-name }}-v${{ inputs.package-version }}
           git push origin HEAD:main --tags
+          git checkout ${{ inputs.package-name }}-v${{ inputs.package-version }}
 
       - name: Create GitHub Release
         if: steps.check_release.outputs.CREATE_RELEASE == 'true'
