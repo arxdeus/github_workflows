@@ -3,6 +3,14 @@ permissions:
   contents: write
 on:
   workflow_call:
+    inputs:
+      package-name:
+        type: string
+        required: true
+      package-version:
+        type: string
+        default: '9.9.9'
+        required: true
 
 jobs:
   setup:
@@ -33,15 +41,6 @@ jobs:
         uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
           flutter-version: ${{ matrix.flutter-version }}
-
-      - name: Parse meta from tag
-        env:
-          BRANCH: ${{ github.ref_name }}
-        id: split
-        run: |
-          echo "package_version=${BRANCH##*-v}" >> $GITHUB_OUTPUT
-          echo "package_name=${BRANCH%%-*}" >> $GITHUB_OUTPUT
-          echo "pretty_package_name=${package_name^}" >> $GITHUB_OUTPUT
 
       - name: Check if release exists
         id: check_release
