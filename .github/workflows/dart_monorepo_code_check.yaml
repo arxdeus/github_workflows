@@ -2,6 +2,10 @@ name: Checkout
 
 on:
   workflow_call:
+    inputs:
+      needs-test-report:
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -85,7 +89,7 @@ jobs:
       - name: Write test report
         uses: dorny/test-reporter@v1
         # PRs from forks have no write permissions.
-        if: github.event.pull_request.head.repo.fork == false && (success() || failure())
+        if: github.event.pull_request.head.repo.fork == false && (success() || failure()) && (${{ inputs.needs-test-report}} == true)
         with:
           name: Test Report (Flutter ${{ matrix.flutter-version }})
           path: ${{ github.workspace }}/flutter-test-report.json
