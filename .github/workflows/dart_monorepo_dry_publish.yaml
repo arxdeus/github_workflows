@@ -58,6 +58,10 @@ jobs:
       - name: Set default branch.
         run: git remote set-head origin --auto
         shell: bash
+      - name: Debug print git-log
+        shell: bash
+        run: |
+          git log --grep=release* --invert-grep --pretty=format:"- %s"
       - name: Append CHANGELOG
         shell: bash
         run: |
