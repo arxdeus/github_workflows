@@ -12,9 +12,6 @@ jobs:
       steps:
         - name: 📦 Get the .github actions
           uses: actions/checkout@v4
-          with:
-            sparse-checkout: |
-              .github
         - name: Get Flutter SDK version
           id: flutter-version
           run: |
@@ -59,10 +56,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Append CHANGELOG
-        uses: arxdeus/github_workflows/actions/monorepo_changelog_from_tag@main
-        with:
-          package-name: ${{ steps.split.outputs.package_name }}
-          package-version: ${{ steps.split.outputs.package_version }}
+        shell: bash
+        run |
+          cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git tag --list --sort=-version:refname "modulisto-v*" | head -n 2 | tail -n 1)..HEAD packages/${{ steps.split.outputs.package_name }})$(echo $'\r\n')$(cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md)" > packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
+          cat <<< "## ${{ steps.split.outputs.package_version }} $(echo $'\r\n')$(cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md)" > packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
+          cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
 
       - name: Dry publish check
         run: cd packages/${{ steps.split.outputs.package_name }} && flutter pub publish --dry-run
