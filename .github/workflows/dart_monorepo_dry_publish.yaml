@@ -26,7 +26,7 @@ jobs:
             sdk_constraint=$(cat pubspec.yaml | yq .environment.flutter)
             version=$(cat .fvmrc | jq -r .flutter)
             echo "version=$version" >> "$GITHUB_OUTPUT"
-  publish:
+  dry_publish:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
@@ -45,7 +45,7 @@ jobs:
       - name: Check if release exists
         id: check_release
         run: |
-          RELEASE=$(gh release view ${{ steps.split.outputs.package_name }}-v${{ steps.split.outputs.package_version }} --json tagName -q .tagName || echo "not_found")
+          RELEASE=$(gh release view ${{ inputs.package-name }}-v${{ inputs.package-version }} --json tagName -q .tagName || echo "not_found")
           if [[ "$RELEASE" == "not_found" ]]; then
             echo "CREATE_RELEASE=true" >> $GITHUB_OUTPUT
           else
@@ -57,9 +57,9 @@ jobs:
       - name: Append CHANGELOG
         shell: bash
         run: |
-          cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git tag --list --sort=-version:refname "modulisto-v*" | head -n 2 | tail -n 1)..HEAD packages/${{ steps.split.outputs.package_name }})$(echo $'\r\n')$(cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md)" > packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
-          cat <<< "## ${{ steps.split.outputs.package_version }} $(echo $'\r\n')$(cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md)" > packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
-          cat packages/${{ steps.split.outputs.package_name }}/CHANGELOG.md
+          cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git tag --list --sort=-version:refname "modulisto-v*" | head -n 2 | tail -n 1)..HEAD packages/${{ inputs.package-name }})$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+          cat <<< "## ${{ inputs.package-version }} $(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+          cat packages/${{ inputs.package-name }}/CHANGELOG.md
 
       - name: Dry publish check
-        run: cd packages/${{ steps.split.outputs.package_name }} && flutter pub publish --dry-run
+        run: cd packages/${{ inputs.package-name }} && flutter pub publish --dry-run
