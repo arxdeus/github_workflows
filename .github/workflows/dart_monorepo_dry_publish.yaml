@@ -62,8 +62,7 @@ jobs:
       - name: Append CHANGELOG
         shell: bash
         run: |
-          echo $(git describe --tags --abbrev=0)
-          cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git describe --tags --abbrev=0)..origin/HEAD packages/${{ inputs.package-name }})$(echo $'\r\n')$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+          cat <<< "$(git log --grep=release* --invert-grep --pretty=format:"- %s"  $(git tag -n --sort=-version:refname "${{ inputs.package-name }}-v*" | head -n1)..origin/HEAD packages/${{ inputs.package-name }})$(echo $'\r\n')$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
           cat <<< "## ${{ inputs.package-version }}$(echo $'\r\n')$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
           cat packages/${{ inputs.package-name }}/CHANGELOG.md
 
