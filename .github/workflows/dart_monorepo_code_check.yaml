@@ -37,7 +37,7 @@ jobs:
         run: |
           {
             echo 'matrix<<EOF'
-            jq -cn  --argjson flutter-versions "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" --argjson packages "[$(ls packages | sed "s/^/\"/;s/$/\"/" | tr "\n" "," | sed 's/.$//')]" '$ARGS.named'
+            jq -cn  --argjson flutter-version "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" --argjson package "[$(ls packages | sed "s/^/\"/;s/$/\"/" | tr "\n" "," | sed 's/.$//')]" '$ARGS.named'
             echo EOF
           } >> "$GITHUB_OUTPUT"
       - name: Print output values
