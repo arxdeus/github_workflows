@@ -31,6 +31,8 @@ jobs:
               - '**.dart'
               - 'pubspec.yaml'
               - 'pubspec.lock'
+              - '**/pubspec.yaml'
+              - '**/pubspec.lock'
 
       - name: Get Flutter SDK version constraint
         id: flutter-version-constraint
@@ -54,35 +56,27 @@ jobs:
         flutter-version:
           - ${{ needs.setup.outputs.flutter-lower-bound }}
           - ${{ needs.setup.outputs.flutter-upper-bound }}
-    name: "🧪 Check code with analysis, format, and tests"
+    name: "Codecheck"
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: ./
     steps:
-      - name: 🚂 Setup Flutter and dependencies
+      - name: Setup Flutter
         uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
           flutter-version: ${{ matrix.flutter-version }}
 
-      - name: 👷 Install Dependencies
-        timeout-minutes: 1
-        run: |
-          flutter pub get
-
-      - name: 🚦 Check code format
+      - name: Check code format
         id: check-format
         timeout-minutes: 1
         run: |
           find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
 
-      - name: 📈 Check for Warnings
+      - name: Check for Warnings
         id: check-analyzer
         timeout-minutes: 1
         run: |
           flutter analyze --fatal-infos --fatal-warnings --no-pub
 
-      - name: 🧪 Unit & Widget tests
+      - name: Unit & Widget tests
         timeout-minutes: 2
         run: |
           ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
