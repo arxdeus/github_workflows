@@ -14,14 +14,11 @@ runs:
         uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
           flutter-version: ${{ inputs.flutter-version }}
-      - name: Move to target folder
-        shell: bash
-        run: cd ${{ inputs.working-directory }}
       - name: 🚦 Check code format
         id: check-format
         shell: bash
         run: |
-          find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
+          find {{ inputs.working-directory }}/lib {{ inputs.working-directory }}/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
           dart format \
           --set-exit-if-changed \
           --line-length 120
