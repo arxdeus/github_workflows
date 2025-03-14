@@ -1,0 +1,33 @@
+name: Flutter Codecheck
+description: Checks your Flutter Code
+
+inputs:
+  flutter-version:
+    required: true
+
+runs:
+  using: composite
+  steps:
+      - name: 🚂 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '${{ inputs.flutter-version }}'
+          channel: "stable"
+          cache: true
+
+      - name: 🚦 Check code format
+        id: check-format
+        timeout-minutes: 1
+        run: |
+          find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
+
+      - name: 📈 Check for Warnings
+        id: check-analyzer
+        timeout-minutes: 1
+        run: |
+          flutter analyze --fatal-infos --fatal-warnings --no-pub
+
+      - name: 🧪 Unit & Widget tests
+        timeout-minutes: 2
+        run: |
+          ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
