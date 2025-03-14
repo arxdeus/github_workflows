@@ -35,8 +35,7 @@ jobs:
         id: flutter-matrix
         # Extract the lower bound from pubspec.yaml and the upper bound from .fvmrc
         run: |
-          echo "matrix=$(jq -cn  --argjson flutter-version "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" --argjson package "[$(ls packages | sed "s/^/\"/;s/$/\"/" | tr "\n" "," | sed 's/.$//')]" '{includes: $ARGS.named}')" >> "$GITHUB_OUTPUT"
-
+          echo "matrix=$(jq -cn  --argjson flutter-versions "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" --argjson packages "[$(ls packages | sed "s/^/\"/;s/$/\"/" | tr "\n" "," | sed 's/.$//')]" '$ARGS.named' | sed s/\"/'\\\"'/g)"
       - name: Print output values
         run: |
           echo "flutter-file-changed=${{ steps.filter.outputs.flutter-file-changed }}"
