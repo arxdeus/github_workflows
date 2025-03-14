@@ -17,8 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       flutter-file-changed: ${{ steps.filter.outputs.flutter-file-changed }}
-      flutter-lower-bound: ${{ steps.flutter-version-constraint.outputs.lower-bound }}
-      flutter-upper-bound: ${{ steps.flutter-version-constraint.outputs.upper-bound }}
+      flutter-matrix: ${{ steps.flutter-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,31 +30,31 @@ jobs:
               - '**.dart'
               - 'pubspec.yaml'
               - 'pubspec.lock'
-              - '**/pubspec.yaml'
-              - '**/pubspec.lock'
 
-      - name: Get Flutter SDK version constraint
-        id: flutter-version-constraint
+      - name: Get Flutter SDK version constraints and packages
+        id: flutter-matrix
         # Extract the lower bound from pubspec.yaml and the upper bound from .fvmrc
         run: |
-          sdk_constraint=$(cat pubspec.yaml | yq .environment.flutter)
-          lower_bound=$(echo "$sdk_constraint" | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-          upper_bound=$(cat .fvmrc | jq -r .flutter)
-          echo "lower-bound=$lower_bound" >> "$GITHUB_OUTPUT"
-          echo "upper-bound=$upper_bound" >> "$GITHUB_OUTPUT"
-
+          {
+            echo 'matrix<<EOF'
+            jq -cn  --argjson flutter-version "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" '$ARGS.named'
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
       - name: Print output values
         run: |
           echo "flutter-file-changed=${{ steps.filter.outputs.flutter-file-changed }}"
+          echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
+
+      - name: Print output values
+        run: |
+          echo "flutter-file-changed=${{ steps.flutter-matrix.outputs.flutter-file-changed }}"
+          echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
   checkout:
     needs: setup
     if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }}
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        flutter-version:
-          - ${{ needs.setup.outputs.flutter-lower-bound }}
-          - ${{ needs.setup.outputs.flutter-upper-bound }}
+      matrix: ${{ fromJson(needs.setup.flutter-matrix) }}
     name: "Codecheck"
     timeout-minutes: 10
     steps:
