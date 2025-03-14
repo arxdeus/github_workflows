@@ -54,7 +54,7 @@ jobs:
     if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }}
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.setup.flutter-matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.flutter-matrix) }}
     name: "Codecheck"
     timeout-minutes: 10
     steps:
