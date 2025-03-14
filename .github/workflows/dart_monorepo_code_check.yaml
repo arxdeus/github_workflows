@@ -17,8 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       flutter-file-changed: ${{ steps.filter.outputs.flutter-file-changed }}
-      flutter-lower-bound: ${{ steps.flutter-version-constraint.outputs.lower-bound }}
-      flutter-upper-bound: ${{ steps.flutter-version-constraint.outputs.upper-bound }}
+      flutter-matrix: ${{ steps.flutter-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,15 +31,11 @@ jobs:
               - 'pubspec.yaml'
               - 'pubspec.lock'
 
-      - name: Get Flutter SDK version constraint
-        id: flutter-version-constraint
+      - name: Get Flutter SDK version constraints and packages
+        id: flutter-matrix
         # Extract the lower bound from pubspec.yaml and the upper bound from .fvmrc
         run: |
-          sdk_constraint=$(cat pubspec.yaml | yq .environment.flutter)
-          lower_bound=$(echo "$sdk_constraint" | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-          upper_bound=$(cat .fvmrc | jq -r .flutter)
-          echo "lower-bound=$lower_bound" >> "$GITHUB_OUTPUT"
-          echo "upper-bound=$upper_bound" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(jq -cn  --argjson flutter-version "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" --argjson package "[$(ls packages | sed "s/^/\"/;s/$/\"/" | tr "\n" "," | sed 's/.$//')]" '{includes: $ARGS.named}' | sed s/\"/'\\\"'/g)" >> "$GITHUB_OUTPUT"
 
       - name: Print output values
         run: |
@@ -50,10 +45,7 @@ jobs:
     if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }}
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        flutter-version:
-          - ${{ needs.setup.outputs.flutter-lower-bound }}
-          - ${{ needs.setup.outputs.flutter-upper-bound }}
+      matrix: ${{ fromJson(needs.setup.outputs.flutter-matrix) }}
     name: "Check code with analysis, format, and tests"
     timeout-minutes: 10
     steps:
@@ -62,14 +54,15 @@ jobs:
         with:
           fetch-tags: true
           fetch-depth: 0
-      - name: "Codecheck (Flutter ${{ matrix.flutter-version }})"
+      - name: "Codecheck (Package: ${{ needs.setup.outputs.package }}, Flutter ${{ matrix.flutter-version }})"
         uses: arxdeus/github_workflows/actions/flutter_codecheck@main
+        working-directory: packages/${{ needs.setup.outputs.package }}
         with:
           flutter-version: ${{ needs.setup.outputs.flutter-version }}
       - name: Write test report
         uses: dorny/test-reporter@v1
         # PRs from forks have no write permissions.
-        if: github.event.pull_request.head.repo.fork == false && (success() || failure()) && (${{ inputs.needs-test-report}} == true)
+        if: github.event.pull_request.head.repo.fork == false && (success() || failure()) && (${{ inputs.needs-test-report }} == true)
         with:
           name: Test Report (Flutter ${{ matrix.flutter-version }})
           path: ${{ github.workspace }}/flutter-test-report.json
