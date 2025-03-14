@@ -35,11 +35,12 @@ jobs:
         id: flutter-matrix
         # Extract the lower bound from pubspec.yaml and the upper bound from .fvmrc
         run: |
-          echo "matrix=${{ toJson($(jq -cn  --argjson flutter-version "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" --argjson package "[$(ls packages | sed "s/^/\"/;s/$/\"/" | tr "\n" "," | sed 's/.$//')]" '{includes: $ARGS.named}')) }}"  >> "$GITHUB_OUTPUT"
+          echo "matrix=$(jq -cn  --argjson flutter-version "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" --argjson package "[$(ls packages | sed "s/^/\"/;s/$/\"/" | tr "\n" "," | sed 's/.$//')]" '{includes: $ARGS.named}')" >> "$GITHUB_OUTPUT"
 
       - name: Print output values
         run: |
           echo "flutter-file-changed=${{ steps.filter.outputs.flutter-file-changed }}"
+          echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
   checkout:
     needs: setup
     if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }}
