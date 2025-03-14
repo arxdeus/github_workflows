@@ -18,7 +18,7 @@ runs:
         id: check-format
         shell: bash
         run: |
-          find {{ inputs.working-directory }}/lib {{ inputs.working-directory }}/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
+          find ${{ inputs.working-directory }}/lib {{ inputs.working-directory }}/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
           dart format \
           --set-exit-if-changed \
           --line-length 120
