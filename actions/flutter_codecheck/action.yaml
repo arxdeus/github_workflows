@@ -2,6 +2,8 @@ name: Flutter Codecheck
 description: Checks your Flutter Code
 
 inputs:
+  working-directory:
+    type: string
   flutter-version:
     required: true
 
@@ -17,7 +19,7 @@ runs:
 
       - name: Print folder
         shell: bash
-        run: ls
+        run: cd ${{ inputs.working-directory }}
 
       - name: 🚦 Check code format
         id: check-format
