@@ -58,16 +58,16 @@ jobs:
         with:
           fetch-tags: true
           fetch-depth: 0
-      - name: "Codecheck (Package: ${{ needs.setup.outputs.package }}, Flutter ${{ matrix.flutter-version }})"
+      - name: "Codecheck (Package: ${{ matrix.package }}, Flutter ${{ matrix.flutter-version }})"
         uses: arxdeus/github_workflows/actions/flutter_codecheck@main
         with:
-          working-directory: packages/${{ needs.setup.outputs.package }}
-          flutter-version: ${{ needs.setup.outputs.flutter-version }}
+          working-directory: packages/${{ matrix.package }}
+          flutter-version: ${{ matrix.flutter-version }}
       - name: Write test report
         uses: dorny/test-reporter@v1
         # PRs from forks have no write permissions.
         if: github.event.pull_request.head.repo.fork == false && (success() || failure()) && (${{ inputs.needs-test-report }} == true)
         with:
-          name: Test Report (Flutter ${{ matrix.flutter-version }})
+          name: "Test Report (Package: ${{ matrix.package }}, Flutter ${{ matrix.flutter-version }})"
           path: ${{ github.workspace }}/flutter-test-report.json
           reporter: flutter-json
