@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.flutter-matrix) }}
-    name: "Check code with analysis, format, and tests"
+    name: "Codecheck"
     timeout-minutes: 10
     steps:
       - name: "Checkout repository"
