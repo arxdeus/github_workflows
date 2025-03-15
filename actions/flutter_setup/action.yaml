@@ -21,7 +21,7 @@ runs:
         fetch-depth: 0
 
     - name: 🚂 Setup Flutter
-      uses: arxdeus/flutter-action@v1
+      uses: arxdeus/flutter-action@main
       with:
         flutter-version: '${{ inputs.flutter-version }}'
 
