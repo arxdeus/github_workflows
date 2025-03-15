@@ -18,7 +18,7 @@ jobs:
       outputs:
         flutter-version: ${{ steps.flutter-version.outputs.version }}
       steps:
-        - name: 📦 Get the .github actions
+        - name: Checkout
           uses: actions/checkout@v4
           with:
             fetch-tags: true
@@ -37,10 +37,31 @@ jobs:
       id-token: write
       contents: write
     steps:
-      - name: Codecheck (Flutter ${{ needs.setup.outputs.flutter-version }})
-        uses: arxdeus/github_workflows/actions/flutter_codecheck@main
+      - name: Setup Flutter and dependencies
+        uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
-          flutter-version: ${{ needs.setup.outputs.flutter-version }}
+          flutter-version: ${{ matrix.flutter-version }}
+
+      - name: Check if release exists
+        id: check_release
+        run: |
+          RELEASE=$(gh release view ${{ inputs.package-name }}-v${{ inputs.package-version }} --json tagName -q .tagName || echo "not_found")
+          if [[ "$RELEASE" == "not_found" ]]; then
+            echo "CREATE_RELEASE=true" >> $GITHUB_OUTPUT
+          else
+            echo "CREATE_RELEASE=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set default branch
+        run: git remote set-head origin --auto
+        shell: bash
+      - name: Append CHANGELOG
+        shell: bash
+        run: |
+          cat <<< "$(git log --grep="release*" --invert-grep --pretty=format:"- %s" $(git tag -n --sort=-version:refname "${{ inputs.package-name }}-v*" | head -n1 | xargs -L1)..HEAD packages/${{ inputs.package-name }})$(echo $'\r\n')$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+          cat <<< "## ${{ inputs.package-version }}$(echo $'\r\n')$(echo $'\r\n')$(cat packages/${{ inputs.package-name }}/CHANGELOG.md)" > packages/${{ inputs.package-name }}/CHANGELOG.md
+          cat packages/${{ inputs.package-name }}/CHANGELOG.md
 
       - name: Dry publish check
         run: cd packages/${{ inputs.package-name }} && flutter pub publish --dry-run

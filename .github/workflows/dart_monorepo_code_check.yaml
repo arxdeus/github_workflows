@@ -80,6 +80,7 @@ jobs:
         timeout-minutes: 2
         run: |
           ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
+
       - name: Write test report
         uses: dorny/test-reporter@v1
         # PRs from forks have no write permissions.
