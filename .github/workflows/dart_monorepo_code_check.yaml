@@ -46,7 +46,7 @@ jobs:
           echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
   checkout:
     needs: setup
-    if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }}
+    if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }} || github.event.issue.pull_request
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.flutter-matrix) }}
