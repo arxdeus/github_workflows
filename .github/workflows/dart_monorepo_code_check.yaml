@@ -59,7 +59,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Setup Flutter
-        uses: arxdeus/github_workflows/actions/flutter_setup@main
+        uses: arxdeus/github_workflows/actions/flutter_setup@update
         with:
           flutter-version: ${{ matrix.flutter-version }}
 
