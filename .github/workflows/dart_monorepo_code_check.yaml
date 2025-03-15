@@ -58,10 +58,9 @@ jobs:
         with:
           fetch-tags: true
           fetch-depth: 0
-      - name: "Codecheck (Package: ${{ matrix.package }}, Flutter ${{ matrix.flutter-version }})"
-        uses: arxdeus/github_workflows/actions/flutter_codecheck@main
+      - name: "Setup ( Flutter ${{ matrix.flutter-version }})"
+        uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
-          working-directory: packages/${{ matrix.package }}
           flutter-version: ${{ matrix.flutter-version }}
 
       - name: Check code format
