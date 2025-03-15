@@ -58,7 +58,8 @@ jobs:
         with:
           fetch-tags: true
           fetch-depth: 0
-      - name: "Setup ( Flutter ${{ matrix.flutter-version }})"
+
+      - name: "Setup (Flutter ${{ matrix.flutter-version }})"
         uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
           flutter-version: ${{ matrix.flutter-version }}
@@ -85,6 +86,6 @@ jobs:
         # PRs from forks have no write permissions.
         if: github.event.pull_request.head.repo.fork == false && (success() || failure()) && (${{ inputs.needs-test-report }} == true)
         with:
-          name: "Test Report (Package: ${{ matrix.package }}, Flutter ${{ matrix.flutter-version }})"
+          name: "Test Report (Flutter ${{ matrix.flutter-version }})"
           path: ${{ github.workspace }}/flutter-test-report.json
           reporter: flutter-json
