@@ -17,7 +17,7 @@ runs:
         uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
           flutter-version: ${{ inputs.flutter-version }}
-      - name: 🚦 Check code format
+      - name: Check code format
         id: check-format
         shell: bash
         run: |
@@ -26,7 +26,7 @@ runs:
           --set-exit-if-changed \
           --line-length 120
 
-      - name: 📈 Check for Warnings
+      - name: Check for Warnings
         id: check-analyzer
         shell: bash
         run: |
@@ -35,7 +35,7 @@ runs:
           --fatal-warnings \
           --no-pub
 
-      - name: 🧪 Unit & Widget tests
+      - name: Unit & Widget tests
         shell: bash
         run: |
           flutter test \
