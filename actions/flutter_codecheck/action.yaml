@@ -9,9 +9,6 @@ inputs:
 
 runs:
   using: composite
-  defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }
   steps:
       - name: "Setup Flutter ${{ inputs.flutter-version }}"
         uses: arxdeus/github_workflows/actions/flutter_setup@main
