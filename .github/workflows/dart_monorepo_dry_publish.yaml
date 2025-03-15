@@ -29,13 +29,10 @@ jobs:
             sdk_constraint=$(cat pubspec.yaml | yq .environment.flutter)
             version=$(cat .fvmrc | jq -r .flutter)
             echo "version=$version" >> "$GITHUB_OUTPUT"
+
   dry_publish:
     needs: setup
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version:
-          - ${{ needs.setup.outputs.flutter-version }}
     permissions:
       id-token: write
       contents: write

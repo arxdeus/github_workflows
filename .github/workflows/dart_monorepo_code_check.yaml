@@ -1,4 +1,4 @@
-name: Checkout
+name: Code Check on Checkout
 
 on:
   workflow_call:
@@ -44,11 +44,6 @@ jobs:
         run: |
           echo "flutter-file-changed=${{ steps.filter.outputs.flutter-file-changed }}"
           echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
-
-      - name: Print output values
-        run: |
-          echo "flutter-file-changed=${{ steps.flutter-matrix.outputs.flutter-file-changed }}"
-          echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
   checkout:
     needs: setup
     if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }}
@@ -58,9 +53,15 @@ jobs:
     name: "Codecheck"
     timeout-minutes: 10
     steps:
-      - name: Setup Flutter
-        uses: arxdeus/github_workflows/actions/flutter_setup@main
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
         with:
+          fetch-tags: true
+          fetch-depth: 0
+      - name: "Codecheck (Package: ${{ matrix.package }}, Flutter ${{ matrix.flutter-version }})"
+        uses: arxdeus/github_workflows/actions/flutter_codecheck@main
+        with:
+          working-directory: packages/${{ matrix.package }}
           flutter-version: ${{ matrix.flutter-version }}
 
       - name: Check code format
@@ -83,8 +84,8 @@ jobs:
       - name: Write test report
         uses: dorny/test-reporter@v1
         # PRs from forks have no write permissions.
-        if: github.event.pull_request.head.repo.fork == false && (success() || failure()) && (${{ inputs.needs-test-report}} == true)
+        if: github.event.pull_request.head.repo.fork == false && (success() || failure()) && (${{ inputs.needs-test-report }} == true)
         with:
-          name: Test Report (Flutter ${{ matrix.flutter-version }})
+          name: "Test Report (Package: ${{ matrix.package }}, Flutter ${{ matrix.flutter-version }})"
           path: ${{ github.workspace }}/flutter-test-report.json
           reporter: flutter-json
