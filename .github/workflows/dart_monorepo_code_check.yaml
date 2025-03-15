@@ -64,22 +64,30 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
 
-      - name: Check code format
-        id: check-format
-        timeout-minutes: 1
-        run: |
-          find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
+      - name: Run tests parallel
+        uses: sambacha/parallelish@v1
+        id: testing-tasks
+        with:
+          cmd1: find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
+          cmd2: flutter analyze --fatal-infos --fatal-warnings --no-pub
+          cmd3: ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
 
-      - name: Check for Warnings
-        id: check-analyzer
-        timeout-minutes: 1
-        run: |
-          flutter analyze --fatal-infos --fatal-warnings --no-pub
+      # - name: Check code format
+      #   id: check-format
+      #   timeout-minutes: 1
+      #   run: |
+      #     find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
 
-      - name: Unit & Widget tests
-        timeout-minutes: 2
-        run: |
-          ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
+      # - name: Check for Warnings
+      #   id: check-analyzer
+      #   timeout-minutes: 1
+      #   run: |
+      #     flutter analyze --fatal-infos --fatal-warnings --no-pub
+
+      # - name: Unit & Widget tests
+      #   timeout-minutes: 2
+      #   run: |
+      #     ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
 
       - name: Write test report
         uses: dorny/test-reporter@v1
