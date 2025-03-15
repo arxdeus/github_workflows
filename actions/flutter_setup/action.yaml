@@ -14,18 +14,18 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: 📦 Checkout the repo
+    - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-tags: true
         fetch-depth: 0
 
-    - name: 🚂 Setup Flutter
-      uses: arxdeus/flutter-action@main
+    - name: Setup Flutter
+      uses: arxdeus/flutter-action@v1
       with:
         flutter-version: '${{ inputs.flutter-version }}'
 
-    - name: 👷 Install Dependencies
+    - name: Install Dependencies
       shell: bash
       run: |
         echo /home/runner/.pub-cache/bin >> $GITHUB_PATH
