@@ -45,12 +45,12 @@ jobs:
           echo "flutter-file-changed=${{ steps.filter.outputs.flutter-file-changed }}"
           echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
   checkout:
+    name: "Codecheck - ${{ strategy.job-index }}"
     needs: setup
     if: ${{ needs.setup.outputs.flutter-file-changed == 'true' }} || github.event.issue.pull_request
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.flutter-matrix) }}
-    name: "Codecheck"
     timeout-minutes: 10
     steps:
       - name: "Checkout repository"
