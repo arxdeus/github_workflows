@@ -14,32 +14,25 @@ runs:
         uses: arxdeus/github_workflows/actions/flutter_setup@main
         with:
           flutter-version: ${{ inputs.flutter-version }}
-      - name: Check code format
-        id: check-format
-        shell: bash
-        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
-        run: |
-          find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
-          dart format \
-          --set-exit-if-changed \
-          --line-length 120
 
-      - name: Check for Warnings
-        id: check-analyzer
-        shell: bash
+      - name: "Run tests parallel"
+        uses: sambacha/parallelish@v1.0.0
+        id: testing-tasks
         working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
-        run: |
-          flutter analyze \
-          --fatal-infos \
-          --fatal-warnings \
-          --no-pub
-
-      - name: Unit & Widget tests
-        shell: bash
-        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
-        run: |
-          flutter test \
-          --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" \
-          --concurrency=6 \
-          --no-pub \
-          --coverage
+        with:
+          cmd1: |
+            find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
+            dart format \
+            --set-exit-if-changed \
+            --line-length 120
+          cmd2: |
+            flutter analyze \
+            --fatal-infos \
+            --fatal-warnings \
+            --no-pub
+          cmd3: |
+            flutter test \
+            --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" \
+            --concurrency=6 \
+            --no-pub \
+            --coverage
