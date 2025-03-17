@@ -16,41 +16,19 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      flutter-file-changed: ${{ steps.filter.outputs.flutter-file-changed }}
-      flutter-matrix: ${{ steps.flutter-matrix.outputs.matrix }}
+      file-changed: ${{ steps.filter.outputs.file-changed }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Filter changed files
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            flutter-file-changed:
-              - '**.dart'
-              - 'pubspec.yaml'
-              - 'pubspec.lock'
-
       - name: Get Flutter SDK version constraints and packages
-        id: flutter-matrix
-        # Extract the lower bound from pubspec.yaml and the upper bound from .fvmrc
-        run: |
-          {
-            echo 'matrix<<EOF'
-            jq -cn  --argjson flutter-version "[\"$(cat pubspec.yaml | yq .environment.flutter | grep -oP '(?<=\>=)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\", \"$(cat .fvmrc | jq -r .flutter)\"]" '$ARGS.named'
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
-      - name: Print output values
-        run: |
-          echo "flutter-file-changed=${{ steps.filter.outputs.flutter-file-changed }}"
-          echo "matrix=${{ steps.flutter-matrix.outputs.matrix }}"
+        id: matrix
+        uses: arxdeus/github_workflows/actions/flutter_parse_versions@main
   checkout:
     name: "Codecheck - ${{ strategy.job-index }}"
     needs: setup
-    if: ${{ needs.setup.outputs.flutter-file-changed == 'true' || github.event_name == 'pull_request' }}
+    if: ${{ needs.setup.outputs.file-changed == 'true' || github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.setup.outputs.flutter-matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     timeout-minutes: 10
     steps:
       - name: "Checkout repository"
@@ -71,23 +49,6 @@ jobs:
           cmd1: find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
           cmd2: flutter analyze --fatal-infos --fatal-warnings --no-pub
           cmd3: ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
-
-      # - name: Check code format
-      #   id: check-format
-      #   timeout-minutes: 1
-      #   run: |
-      #     find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
-
-      # - name: Check for Warnings
-      #   id: check-analyzer
-      #   timeout-minutes: 1
-      #   run: |
-      #     flutter analyze --fatal-infos --fatal-warnings --no-pub
-
-      # - name: Unit & Widget tests
-      #   timeout-minutes: 2
-      #   run: |
-      #     ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
 
       - name: Write test report
         uses: dorny/test-reporter@v1

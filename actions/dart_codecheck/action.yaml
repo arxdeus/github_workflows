@@ -1,19 +1,19 @@
-name: Flutter Codecheck
-description: Checks your Flutter Code
+name: Dart Codecheck
+description: Checks your Dart Code
 
 inputs:
   working-directory:
     type: string
-  flutter-version:
+  dart-version:
     required: true
 
 runs:
   using: composite
   steps:
-    - name: "Setup Flutter ${{ inputs.flutter-version }}"
-      uses: arxdeus/github_workflows/actions/flutter_setup@main
+    - name: "Setup Dart ${{ inputs.dart-version }}"
+      uses: dart-lang/setup-dart@v1
       with:
-        flutter-version: ${{ inputs.flutter-version }}
+        sdk: ${{ inputs.dart-version }}
 
     - name: "Run tests parallel"
       uses: sambacha/parallelish@v1.0.0
@@ -26,13 +26,13 @@ runs:
           --set-exit-if-changed \
           --line-length 120
         cmd2: |
-          flutter analyze \
+          dart analyze \
           --fatal-infos \
           --fatal-warnings \
           --no-pub
         cmd3: |
-          flutter test \
-          --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" \
+          dart test \
+          --file-reporter="json:${{ github.workspace }}/dart-test-report.json" \
           --concurrency=6 \
           --no-pub \
           --coverage
