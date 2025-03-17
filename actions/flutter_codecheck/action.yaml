@@ -17,6 +17,7 @@ runs:
       - name: Check code format
         id: check-format
         shell: bash
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
         run: |
           find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
           dart format \
@@ -26,6 +27,7 @@ runs:
       - name: Check for Warnings
         id: check-analyzer
         shell: bash
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
         run: |
           flutter analyze \
           --fatal-infos \
@@ -34,6 +36,7 @@ runs:
 
       - name: Unit & Widget tests
         shell: bash
+        working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
         run: |
           flutter test \
           --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" \
