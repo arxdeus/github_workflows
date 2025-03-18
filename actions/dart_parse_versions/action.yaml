@@ -9,8 +9,10 @@ inputs:
     default: true
 
 outputs:
-  file-changed: ${{ steps.filter.outputs.file-changed }}
-  matrix: ${{ steps.matrix.outputs.matrix }}
+  file-changed:
+    value: ${{ steps.filter.outputs.file-changed }}
+  matrix:
+    value: ${{ steps.matrix.outputs.matrix }}
 
 runs:
   using: 'composite'
