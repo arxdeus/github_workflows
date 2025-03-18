@@ -31,7 +31,9 @@ runs:
           --fatal-warnings \
           --no-pub
         cmd3: |
-          dart test \
+          dart \
+          --enable-vm-service \
+          test \
           --file-reporter="json:${{ github.workspace }}/dart-test-report.json" \
           --concurrency=6 \
           --no-pub \
