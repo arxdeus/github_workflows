@@ -42,7 +42,11 @@ runs:
           MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg dartVersion dart-version ".[$dartVersion] += [\"stable\"]")
         fi
 
-        echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+        {
+          echo 'matrix<<EOF'
+          $MATRIX_JSON
+          echo EOF
+        } >> "$GITHUB_OUTPUT"
     - name: Print output values
       shell: bash
       run: |
