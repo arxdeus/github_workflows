@@ -13,7 +13,7 @@ outputs:
   matrix: ${{ steps.matrix.outputs.matrix }}
 
 runs:
-  runs-on: 'composite'
+  using: 'composite'
   steps:
     - uses: actions/checkout@v4
 
@@ -29,6 +29,7 @@ runs:
 
     - name: Get Dart SDK version constraints and packages
       id: matrix
+      shell: bash
       run: |
         MATRIX_JSON=$(jq -cn --argjson dart-version "[\"\"]" '$ARGS.named')
         if [ ${{ inputs.parse-lower-version }} ]; then
@@ -41,6 +42,7 @@ runs:
 
         echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
     - name: Print output values
+      shell: bash
       run: |
         echo "file-changed=${{ steps.filter.outputs.file-changed }}"
         echo "matrix=${{ steps.matrix.outputs.matrix }}"

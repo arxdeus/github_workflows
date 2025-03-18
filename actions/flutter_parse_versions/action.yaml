@@ -13,7 +13,7 @@ outputs:
   matrix: ${{ steps.matrix.outputs.matrix }}
 
 runs:
-  runs-on: 'composite'
+  using: 'composite'
   steps:
     - uses: actions/checkout@v4
 
