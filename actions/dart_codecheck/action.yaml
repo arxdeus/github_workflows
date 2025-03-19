@@ -2,14 +2,13 @@ name: Dart Codecheck
 description: Checks your Dart Code
 
 inputs:
-  working-directory:
-    type: string
   dart-version:
     required: true
 
 runs:
   using: composite
   steps:
+    - uses: actions/checkout@v4
     - name: "Setup Dart ${{ inputs.dart-version }}"
       uses: dart-lang/setup-dart@v1
       with:
