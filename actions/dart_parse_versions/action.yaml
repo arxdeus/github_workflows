@@ -44,7 +44,7 @@ runs:
 
         {
           echo 'matrix<<EOF'
-          $MATRIX_JSON
+          echo ${MATRIX_JSON} | sed -e '$a\'
           echo EOF
         } >> "$GITHUB_OUTPUT"
     - name: Print output values
