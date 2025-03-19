@@ -35,7 +35,7 @@ runs:
       run: |
         MATRIX_JSON=$(jq -cn --argjson dart-version "[\"\"]" '$ARGS.named')
         if [ ${{ inputs.parse-lower-version }} ]; then
-          MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg dartVersion dart-version ".[$dartVersion] += [\"$(cat pubspec.yaml | yq .environment.sdk | grep -oP '(?<=\>=\^)[0-9]+\.[0-9]+\.[0-9]+' | head -1)\"]")
+          MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg dartVersion dart-version ".[$dartVersion] += [\"$(cat pubspec.yaml | yq .environment.sdk | grep -oP '(?<=[\^>=])[0-9]+\.[0-9]+\.[0-9]+' | head -1)\"]")
         fi
 
         if [ ${{ inputs.parse-upper-version }} ]; then
@@ -44,7 +44,7 @@ runs:
 
         {
           echo 'matrix<<EOF'
-          echo ${MATRIX_JSON} | sed -e '$a\'
+          echo ${MATRIX_JSON}
           echo EOF
         } >> "$GITHUB_OUTPUT"
     - name: Print output values
