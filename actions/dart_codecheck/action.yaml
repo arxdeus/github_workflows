@@ -19,7 +19,6 @@ runs:
       uses: sambacha/parallelish@v1.0.0
       id: testing-tasks
       with:
-  with:
           cmd1: find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
           cmd2: dart analyze --fatal-infos --fatal-warnings
           cmd3: dart --enable-vm-service test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6
