@@ -20,19 +20,19 @@ runs:
       id: testing-tasks
       with:
         cmd1: |
-          cd ${{ github.workspace }}/${{ inputs.working-directory }}
+          cd ${{ inputs.working-directory }}
           find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
           dart format \
           --set-exit-if-changed \
           --line-length 120
         cmd2: |
-          cd ${{ github.workspace }}/${{ inputs.working-directory }}
+          cd ${{ inputs.working-directory }}
           dart analyze \
           --fatal-infos \
           --fatal-warnings \
           --no-pub
         cmd3: |
-          cd ${{ github.workspace }}/${{ inputs.working-directory }}
+          cd ${{ inputs.working-directory }}
           dart \
           --enable-vm-service \
           test \
