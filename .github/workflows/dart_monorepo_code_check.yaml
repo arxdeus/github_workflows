@@ -45,12 +45,11 @@ jobs:
       - name: Run tests parallel
         uses: arxdeus/parallel@v2
         with:
-          working-directory: ${{ github.workspace }}
           commands: |
             - directory: pwd && ls
-            - format: find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
+            - format: find ${{ github.workspace }}/packages/**/lib ${{ github.workspace }}/packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
             - analyze: flutter analyze --fatal-infos --fatal-warnings --no-pub
-            - tests: ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
+            - tests: ls -d ${{ github.workspace }}/packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
 
       - name: Write test report
         uses: dorny/test-reporter@v1
