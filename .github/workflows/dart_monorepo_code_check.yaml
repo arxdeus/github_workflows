@@ -43,12 +43,12 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
 
       - name: Run tests parallel
-        uses: sambacha/parallelish@v1.0.0
-        id: testing-tasks
+        uses: arxdeus/parallel@main
         with:
-          cmd1: find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
-          cmd2: flutter analyze --fatal-infos --fatal-warnings --no-pub
-          cmd3: ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
+          commands: |
+            - format: find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
+            - analyze: flutter analyze --fatal-infos --fatal-warnings --no-pub
+            - tests: ls -d packages/* | xargs flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage
 
       - name: Write test report
         uses: dorny/test-reporter@v1
