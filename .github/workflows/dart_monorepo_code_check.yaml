@@ -43,7 +43,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
 
       - name: Run tests parallel
-        uses: arxdeus/parallel@main
+        uses: arxdeus/parallel@v2
         with:
           commands: |
             - format: find packages/**/lib packages/**/test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
