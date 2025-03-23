@@ -34,11 +34,11 @@ runs:
       shell: bash
       run: |
         MATRIX_JSON=$(jq -cn --argjson dart-version "[]" '$ARGS.named')
-        if [ ${{ inputs.parse-lower-version }} ]; then
+        if ${{ inputs.parse-lower-version != '' }}; then
           MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg dartVersion dart-version ".[$dartVersion] += [\"$(cat pubspec.yaml | yq .environment.sdk | grep -oP '(?<=[\^>=])[0-9]+\.[0-9]+\.[0-9]+' | head -1)\"]")
         fi
 
-        if [ ${{ inputs.parse-upper-version }} ]; then
+        if ${{ inputs.parse-upper-version != ''}}; then
           MATRIX_JSON=$(echo $MATRIX_JSON | jq --arg dartVersion dart-version ".[$dartVersion] += [\"stable\"]")
         fi
 
