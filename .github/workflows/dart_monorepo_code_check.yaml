@@ -16,7 +16,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      file-changed: ${{ steps.filter.outputs.file-changed }}
+      file-changed: ${{ steps.matrix.outputs.file-changed }}
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - name: Get Flutter SDK version constraints and packages
