@@ -16,23 +16,11 @@ runs:
         flutter-version: ${{ inputs.flutter-version }}
 
     - name: "Run tests parallel"
-      uses: sambacha/parallelish@v1.0.0
+      uses: arxdeus/parallel@v2
       id: testing-tasks
-      working-directory: ${{ github.workspace }}/${{ inputs.working-directory }}
       with:
-        cmd1: |
-          find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 \
-          dart format \
-          --set-exit-if-changed \
-          --line-length 120
-        cmd2: |
-          flutter analyze \
-          --fatal-infos \
-          --fatal-warnings \
-          --no-pub
-        cmd3: |
-          flutter test \
-          --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" \
-          --concurrency=6 \
-          --no-pub \
-          --coverage
+        working-directory: ${{ inputs.working-directory }}
+        commands: |
+          - format: find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 120
+          - analyze: flutter analyze --fatal-infos --fatal-warnings --no-pub
+          - tests: flutter test --file-reporter="json:${{ github.workspace }}/flutter-test-report.json" --concurrency=6 --no-pub --coverage

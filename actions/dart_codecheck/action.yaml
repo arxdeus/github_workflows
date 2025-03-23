@@ -2,6 +2,8 @@ name: Dart Codecheck
 description: Checks your Dart Code
 
 inputs:
+  working-directory:
+    type: string
   dart-version:
     required: true
 
@@ -21,8 +23,9 @@ runs:
         dart pub get
 
     - name: Run tests parallel
-      uses: arxdeus/parallel@main
+      uses: arxdeus/parallel@v2
       with:
+        working-directory: ${{ inputs.working-directory }}
         commands: |
           - format: find lib test -name "*.dart" ! -name "*.*.dart" -print0 | xargs -0 dart format --set-exit-if-changed --line-length 100
           - analyze: dart analyze --fatal-infos --fatal-warnings
