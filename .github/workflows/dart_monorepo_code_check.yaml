@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       line-length:
-        type: integer
+        type: number
         default: 80
       needs-test-report:
         type: boolean
