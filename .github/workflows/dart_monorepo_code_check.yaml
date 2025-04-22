@@ -28,7 +28,9 @@ jobs:
   checkout:
     name: "Codecheck - ${{ strategy.job-index }}"
     needs: setup
-    if: ${{ needs.setup.outputs.file-changed == 'true' || github.event_name == 'pull_request' }}
+    if: |
+      ${{ needs.setup.outputs.file-changed == 'true' }} ||
+      contains(github.event.issue.labels.*.name, 'release')
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
